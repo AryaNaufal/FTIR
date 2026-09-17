@@ -1,0 +1,163 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CRAP: shared color contrast, repeated controls, aligned grids, grouped spacing. */
+@layer base {
+    [x-cloak] { display: none !important; }
+    body { @apply bg-slate-50 text-slate-800 antialiased; }
+    h1 { @apply mb-2 text-3xl font-semibold tracking-tight text-primary-950; }
+    h2 { @apply mb-3 text-lg font-semibold text-primary-950; }
+    a { @apply text-primary-700; }
+    a, button, summary { @apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-700; }
+    label { @apply mb-5 block text-sm font-medium text-slate-700; }
+    input, select, textarea {
+        @apply mt-2 block min-h-11 w-full rounded-lg border border-slate-400 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition-colors placeholder:text-slate-500 focus:border-primary-700 focus:ring-2 focus:ring-primary-200;
+    }
+    input:disabled, select:disabled, textarea:disabled {
+        @apply cursor-not-allowed border-slate-200 bg-slate-100 text-slate-500 opacity-100 focus:border-slate-200 focus:ring-0;
+    }
+    textarea { @apply min-h-24; }
+    small { @apply mt-1 block text-xs leading-relaxed text-slate-600; }
+    th { @apply whitespace-nowrap bg-slate-50 px-4 py-3 text-left text-xs font-semibold text-slate-600; }
+    td { @apply border-b border-slate-100 px-4 py-4 align-middle text-sm; }
+    summary { @apply cursor-pointer py-3 text-sm font-medium text-primary-700; }
+    pre { @apply max-h-80 max-w-lg overflow-auto whitespace-pre-wrap break-all text-xs; }
+}
+
+@layer components {
+    .icon { @apply inline-block h-5 w-5 shrink-0 align-middle; }
+    .inline-link, .inline-label { @apply inline-flex items-center gap-2; }
+    .inline-link { @apply text-sm font-medium hover:underline; }
+    .inline-link .icon { @apply h-4 w-4; }
+    .skip-link { @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-5 focus:py-3; }
+    .sidebar { @apply fixed inset-y-0 left-0 z-30 flex w-64 flex-col border-r border-slate-200 bg-white px-4 py-8; }
+    .brand { @apply mb-10 flex items-center gap-3 px-3 text-xl text-primary-950; }
+    .brand-name { @apply leading-tight; }
+    .brand small { @apply mt-1 text-[9px] font-medium tracking-[.12em] text-slate-600; }
+    .brand-icon { @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-400 text-primary-950; }
+    .brand-icon .icon { @apply h-7 w-7; }
+    .nav-label { @apply mb-3 mt-5 px-3 text-[11px] font-semibold tracking-widest text-slate-500; }
+    .nav-item { @apply mb-1 flex min-h-11 items-center gap-3 rounded-lg border-l-2 border-transparent px-3 py-3 text-sm text-slate-600 transition-colors hover:bg-slate-50 hover:text-primary-800; }
+    .nav-item.active { @apply border-primary-600 bg-primary-50 font-semibold text-primary-800; }
+    .sidebar-bottom { @apply mt-auto border-t border-slate-200 px-3 pt-5 text-xs text-slate-600; }
+    .sidebar-bottom .icon { @apply h-4 w-4 text-primary-700; }
+    .workspace { @apply ml-64; }
+    header { @apply flex h-20 items-center justify-between gap-4 border-b border-slate-200 bg-white px-8 text-sm; }
+    .breadcrumb { @apply inline-flex min-w-0 items-center gap-2 text-slate-600; }
+    .breadcrumb .icon { @apply h-3.5 w-3.5 text-slate-500; }
+    .breadcrumb b { @apply font-medium text-slate-800; }
+    .account { @apply flex shrink-0 items-center gap-3 text-xs; }
+    .avatar { @apply flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 font-semibold text-primary-800; }
+    main { @apply mx-auto min-h-[85vh] max-w-[1500px] p-8; }
+    footer { @apply flex flex-wrap justify-between gap-3 px-8 py-5 text-xs text-slate-500; }
+    .page-heading { @apply mb-8 flex items-center justify-between gap-5; }
+    .page-heading p { @apply max-w-2xl text-sm leading-relaxed; }
+    .eyebrow { @apply mb-3 text-[11px] font-semibold tracking-[.14em] text-primary-700; }
+    .muted { @apply text-slate-600; }
+    .btn { @apply inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-transparent bg-primary-400 px-4 py-2.5 text-sm font-semibold text-primary-950 transition-colors hover:bg-primary-300 disabled:cursor-not-allowed disabled:opacity-50; }
+    .btn.secondary { @apply border-slate-300 bg-white text-slate-700 hover:border-primary-500 hover:bg-primary-50; }
+    .btn.danger { @apply bg-red-700 text-white hover:bg-red-800; }
+    .btn .icon { @apply h-[18px] w-[18px]; }
+    .text-button { @apply inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-slate-600 hover:bg-slate-50 hover:text-primary-700; }
+    .icon-button { @apply items-center justify-center rounded-lg p-2.5 text-slate-700 hover:bg-primary-50; }
+    .panel { @apply rounded-xl border border-slate-200 bg-white p-6; }
+    .filters { @apply mb-6 flex flex-wrap items-end gap-4; }
+    .filters label { @apply mb-0 min-w-0; flex: 1 1 140px; }
+    .filters label.grow { flex: 2 1 220px; }
+    .filters a { @apply inline-flex min-h-11 items-center text-sm font-medium; }
+    .filter-panel { @apply rounded-xl border border-slate-200 bg-white p-5; }
+    .filter-panel label { flex: 0 1 200px; }
+    .stats { @apply mb-7 grid grid-cols-2 gap-5 xl:grid-cols-4; }
+    .stat { @apply rounded-xl border border-slate-200 bg-white p-5; }
+    .stat-label { @apply flex items-center justify-between gap-3 text-sm font-medium text-slate-600; }
+    .stat-label .icon { @apply text-primary-700; }
+    .stat strong { @apply my-4 block text-4xl font-semibold tracking-tight text-primary-950; }
+    .stat small { @apply text-xs text-slate-600; }
+    .dashboard-grid { @apply grid items-start gap-6 xl:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]; }
+    .dashboard-grid > * { @apply min-w-0; }
+    .section-heading { @apply mb-5 flex flex-wrap items-center justify-between gap-3; }
+    .section-heading h2 { @apply mb-0; }
+    .section-heading > div:last-child:not(:first-child) { @apply flex flex-wrap gap-2; }
+    .table-wrap { @apply w-full overflow-x-auto; }
+    table { @apply w-full; }
+    .table-wrap table { min-width: 580px; }
+    .table-wrap tbody tr { @apply hover:bg-primary-50/40; }
+    .table-wrap tbody tr:last-child td { @apply border-b-0; }
+    .code { @apply whitespace-nowrap font-semibold text-primary-800 hover:underline; }
+    .badge { @apply inline-flex items-center rounded-md bg-primary-50 px-2.5 py-1 text-xs font-medium text-primary-800; }
+    .badge.warning { @apply bg-amber-50 text-amber-800; }
+    .badge.success { @apply bg-emerald-50 text-emerald-800; }
+    .badge.danger { @apply bg-red-50 text-red-800; }
+    .badge.retest { @apply bg-violet-50 text-violet-800; }
+    .workflow { @apply mt-6 bg-primary-50; }
+    .workflow h2 { @apply text-base; }
+    .steps { @apply mt-6 grid grid-cols-2 gap-5 text-sm font-semibold text-primary-700 md:grid-cols-4; }
+    .steps > span { @apply flex items-start gap-3; }
+    .steps b { @apply font-medium text-slate-700; }
+    .form-grid { @apply mb-5 grid gap-5 md:grid-cols-2; }
+    .form-grid label { @apply mb-0; }
+    .modal-backdrop { @apply fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4; }
+    .modal-panel { @apply max-h-[calc(100vh-2rem)] w-full max-w-3xl overflow-y-auto rounded-xl bg-white p-6 shadow-2xl; }
+    .detail-list { @apply mt-5 divide-y divide-slate-200; }
+    .detail-list div { @apply grid grid-cols-3 gap-4 py-3; }
+    .detail-list dt { @apply text-sm font-semibold text-slate-500; }
+    .detail-list dd { @apply col-span-2 text-slate-800; }
+    .notice { @apply mb-5 flex items-start gap-3 rounded-lg border border-primary-200 bg-primary-50 p-4 text-sm leading-relaxed text-primary-900; }
+    .error { @apply mb-5 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm leading-relaxed text-red-800; }
+    .notice > .icon, .error > .icon { @apply mt-0.5; }
+    .error p + p { @apply mt-1; }
+    .empty { @apply py-10 text-center text-sm leading-relaxed text-slate-600; }
+    .upload-box { @apply rounded-xl border-2 border-dashed border-primary-500 bg-primary-50/40 p-5; }
+    .upload-box input { @apply border-0 bg-transparent px-0; }
+    .upload-box > .icon { @apply mr-2 text-primary-700; }
+    .list-row { @apply flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 py-4 text-sm; }
+    .chart { @apply h-[380px] min-w-0 w-full overflow-hidden; }
+    .mobile-button, .sidebar-close, .nav-backdrop { @apply hidden; }
+    .login-page { @apply grid min-h-screen bg-white md:grid-cols-2; }
+    .login-story { @apply flex flex-col justify-between gap-12 bg-gradient-to-br from-primary-50 via-primary-100 to-accent p-14 text-primary-950; }
+    .login-story .brand { @apply mb-0 p-0; }
+    .login-message { @apply max-w-lg; }
+    .login-story h1 { @apply text-5xl leading-tight; }
+    .login-story p { @apply mt-6 max-w-md leading-relaxed text-primary-800; }
+    .login-story > small { @apply text-primary-800 tracking-widest; }
+    .login-features { @apply mt-8 flex flex-wrap gap-4; }
+    .login-features span { @apply inline-flex items-center gap-2 rounded-lg border border-primary-200 bg-white/60 px-3 py-2 text-sm font-medium text-primary-800; }
+    .login-form { @apply flex items-center justify-center p-8; }
+    .login-form .panel { @apply w-full max-w-md border-0; }
+    .login-form h2 { @apply text-2xl; }
+    .login-form label { @apply mt-6; }
+}
+
+@media (max-width: 767px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar .brand { padding-right: 20px; }
+    .sidebar-close { @apply absolute right-2 top-2 inline-flex; }
+    .nav-backdrop { @apply fixed inset-0 z-20 block bg-slate-950/40; }
+    .workspace { margin-left: 0; }
+    header { @apply h-16 gap-2 px-4; }
+    main { @apply px-4 py-6; }
+    .mobile-button { @apply inline-flex; }
+    .account > span:not(.avatar) { display: none; }
+    .account { gap: 4px; }
+    .account .avatar { display: none; }
+    .account .text-button { padding: 8px; font-size: 12px; }
+    .breadcrumb { gap: 4px; font-size: 11px; }
+    .page-heading { @apply flex-col items-start gap-4; }
+    h1 { @apply text-2xl; }
+    .login-story { display: none; }
+    .panel { padding: 20px; }
+    .stats { gap: 12px; }
+    .stat { padding: 16px; }
+    .stat-label { @apply items-start text-xs; }
+    .stat-label .icon { @apply h-4 w-4; }
+    .stat strong { @apply text-3xl; }
+    .chart { height: 340px; }
+    .filter-panel label { flex: 1 1 140px; }
+    .login-form { padding: 24px 12px; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .sidebar { transition: transform 160ms ease; }
+}

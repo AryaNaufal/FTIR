@@ -1,0 +1,25 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite",
+        "format:views": "blade-formatter \"resources/views/**/*.blade.php\" --write",
+        "format:views:check": "blade-formatter \"resources/views/**/*.blade.php\" --check-formatted"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.63.0",
+        "autoprefixer": "^10.4.20",
+        "axios": "^1.7.4",
+        "blade-formatter": "^1.44.4",
+        "concurrently": "^9.0.1",
+        "laravel-vite-plugin": "^1.2.0",
+        "postcss": "^8.4.47",
+        "tailwindcss": "^3.4.13",
+        "vite": "^6.0.11"
+    },
+    "dependencies": {
+        "alpinejs": "^3.17.1",
+        "apexcharts": "^7.2.0"
+    }
+}
