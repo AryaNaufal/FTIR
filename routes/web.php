@@ -1,8 +1,12 @@
 <?php
 
 use App\Http\Controllers\LabController as Lab;
+use App\Http\Controllers\SignupController;
 use App\Http\Middleware\ActiveUser;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/signup', [SignupController::class, 'create'])->middleware('guest')->name('signup');
+Route::post('/signup', [SignupController::class, 'store'])->middleware('guest')->name('signup.store');
 
 Route::middleware(['auth', ActiveUser::class])->group(function () {
     Route::get('/', [Lab::class, 'dashboard'])->name('dashboard');

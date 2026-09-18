@@ -132,6 +132,8 @@
     .login-form .panel { @apply w-full max-w-md border-0; }
     .login-form h2 { @apply text-2xl; }
     .login-form label { @apply mt-6; }
+    .auth-switch { @apply mt-5 text-center text-sm text-slate-600; }
+    .auth-switch a { @apply font-semibold text-primary-700 hover:underline; }
 }
 
 @media (max-width: 767px) {

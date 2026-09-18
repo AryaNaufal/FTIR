@@ -10,6 +10,36 @@ class LoginErrorsTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_first_signup_becomes_admin_and_following_signup_becomes_analyst(): void
+    {
+        $this->withoutVite();
+        $this->get('/signup')->assertOk()->assertSee('Buat akun');
+
+        $this->post('/signup', [
+            'name' => 'Administrator Laboratorium',
+            'email' => 'admin.laboratorium@example.test',
+            'username' => 'adminlab',
+            'password' => 'StrongPassword!123',
+            'password_confirmation' => 'StrongPassword!123',
+        ])->assertRedirect('/');
+
+        $admin = User::where('username', 'adminlab')->firstOrFail();
+        $this->assertSame('admin', $admin->role);
+        $this->assertTrue((bool) $admin->active);
+        $this->assertAuthenticatedAs($admin);
+
+        auth()->logout();
+        $this->post('/signup', [
+            'name' => 'Analis QC',
+            'email' => 'analis.qc@example.test',
+            'username' => 'analisqc',
+            'password' => 'StrongPassword!123',
+            'password_confirmation' => 'StrongPassword!123',
+        ])->assertRedirect('/');
+
+        $this->assertDatabaseHas('users', ['username' => 'analisqc', 'role' => 'analis', 'active' => true]);
+    }
+
     public function test_incorrect_credentials_show_only_credentials_error(): void
     {
         $this->withoutVite();

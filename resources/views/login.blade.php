@@ -42,7 +42,7 @@
                 <input type="password" name="password" required autocomplete="current-password">
             </label>
             <button class="btn w-full">Masuk ke ruang kerja<x-ui-icon name="arrow-right" /></button>
-            <p class="muted text-sm mt-5">Hubungi admin laboratorium untuk akun baru atau reset kata sandi.</p>
+            <p class="auth-switch">Belum memiliki akun? <a href="{{ route('signup') }}">Daftar akun</a></p>
         </form>
     </div>
 </body>
