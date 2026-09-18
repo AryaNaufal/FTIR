@@ -16,15 +16,15 @@
         <section class="panel">
             <div class="table-wrap">
                 <table>
-                    <thead><tr><th>Kode</th><th>Nama bahan baku</th><th>Pemasok</th><th>Kategori</th><th>Grafik referensi</th><th>Status</th><th>Aksi</th></tr></thead>
+                    <thead><tr><th>Kode</th><th>Nama bahan baku</th><th>Pemasok</th><th>Kategori</th><th>Grafik referensi</th><th class="status-heading">Status</th><th class="action-heading">Aksi</th></tr></thead>
                     <tbody>
                         @forelse ($materials as $material)
                             <tr>
                                 <td class="code">{{ $material->code }}</td><td>{{ $material->name }}</td>
                                 <td>{{ $material->supplier ?: '-' }}</td><td>{{ $material->category ?: '-' }}</td>
-                                <td>@if ($material->reference_graph_path)<a class="inline-link" href="{{ route('materials.reference.download', $material->id) }}">Unduh PDF<x-ui-icon name="arrow-down-tray" /></a>@else - @endif</td>
-                                <td><span class="badge">{{ $material->active ? 'Aktif' : 'Nonaktif' }}</span></td>
-                                <td><button class="text-button" type="button" @click="inputOpen = {{ $material->id }}">Edit</button></td>
+                                <td>@if ($material->reference_graph_path && \Illuminate\Support\Facades\Storage::disk('local')->exists($material->reference_graph_path))<a class="inline-link" href="{{ route('materials.reference.download', $material->id) }}">Unduh PDF<x-ui-icon name="arrow-down-tray" /></a>@else<span class="download-unavailable" aria-disabled="true">File tidak tersedia</span>@endif</td>
+                                <td class="status-cell"><span class="badge">{{ $material->active ? 'Aktif' : 'Nonaktif' }}</span></td>
+                                <td class="action-cell"><button class="text-button table-action" type="button" @click="inputOpen = {{ $material->id }}">Edit</button></td>
                             </tr>
                         @empty
                             <tr><td colspan="7" class="empty">Belum ada bahan baku.</td></tr>

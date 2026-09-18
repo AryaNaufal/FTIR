@@ -22,6 +22,7 @@
         '/' => ['squares-2x2', 'Dashboard'],
         '/samples' => ['clipboard-document-list', 'Pemantauan FTIR'],
         '/validations' => ['clipboard-document-check', 'Validasi FTIR'],
+        '/tracking' => ['clock', 'Tracking FTIR'],
     ] as $url => $nav)
             @php($active = $url === '/' ? request()->is('/') : request()->is(ltrim($url, '/') . '*'))
             <a class="nav-item {{ $active ? 'active' : '' }}" href="{{ $url }}"

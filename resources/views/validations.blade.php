@@ -18,19 +18,19 @@
         </section>
         <section class="panel">
             <div class="table-wrap"><table>
-                <thead><tr><th>Project</th><th>Part</th><th>COA dan batch</th><th>Bahan baku</th><th>Dokumen Part</th><th>Grafik referensi</th><th>Status</th><th>Aksi</th></tr></thead>
+                <thead><tr><th>Project</th><th class="part-heading">Part</th><th>COA dan batch</th><th>Bahan baku</th><th>Dokumen Part</th><th>Grafik referensi</th><th class="status-heading">Status</th><th class="action-heading">Aksi</th></tr></thead>
                 <tbody>
                     @forelse ($samples as $sample)
                         <tr>
-                            <td>{{ $sample->project }}</td><td><span class="badge">Part {{ $sample->part_type }}</span></td>
+                            <td>{{ $sample->project }}</td><td class="part-cell"><span class="badge">Part {{ $sample->part_type }}</span></td>
                             <td>{{ $sample->coa_part }}<br><small>{{ $sample->batch_part }}</small></td>
                             <td>{{ $sample->material_code ? $sample->material_code . ' - ' . $sample->material_name : 'Belum dipilih' }}</td>
-                            <td><a class="inline-link" href="{{ route('samples.document.download', $sample->id) }}">Unduh PDF<x-ui-icon name="arrow-down-tray" /></a></td>
-                            <td>@if ($sample->reference_graph_path)<a class="inline-link" href="{{ route('materials.reference.download', $sample->raw_material_id) }}">Unduh PDF<x-ui-icon name="arrow-down-tray" /></a>@else - @endif</td>
+                            <td>@if ($sample->document_part_path && \Illuminate\Support\Facades\Storage::disk('local')->exists($sample->document_part_path))<a class="inline-link" href="{{ route('samples.document.download', $sample->id) }}">Unduh PDF<x-ui-icon name="arrow-down-tray" /></a>@else<span class="download-unavailable" aria-disabled="true">File tidak tersedia</span>@endif</td>
+                            <td>@if ($sample->reference_graph_path && \Illuminate\Support\Facades\Storage::disk('local')->exists($sample->reference_graph_path))<a class="inline-link" href="{{ route('materials.reference.download', $sample->raw_material_id) }}">Unduh PDF<x-ui-icon name="arrow-down-tray" /></a>@else<span class="download-unavailable" aria-disabled="true">File tidak tersedia</span>@endif</td>
                             @php($statuses = ['menunggu_validasi' => ['Menunggu', 'warning'], 'valid' => ['Valid', 'success'], 'tidak_sesuai' => ['Tidak sesuai', 'danger'], 'uji_ulang' => ['Uji ulang', 'retest']])
                             @php([$label, $class] = $statuses[$sample->validation_status] ?? $statuses['menunggu_validasi'])
-                            <td><span class="badge {{ $class }}">{{ $label }}</span></td>
-                            <td><button class="text-button" type="button" @click="selected = {{ Js::from(['id' => $sample->id, 'material' => $sample->raw_material_id, 'project' => $sample->project, 'part' => $sample->part_type]) }}">{{ $sample->validation_status === 'menunggu_validasi' ? 'Mulai validasi' : 'Validasi ulang' }}</button></td>
+                            <td class="status-cell"><span class="badge {{ $class }}">{{ $label }}</span></td>
+                            <td class="action-cell"><button class="text-button table-action" type="button" @click="selected = {{ Js::from(['id' => $sample->id, 'material' => $sample->raw_material_id, 'project' => $sample->project, 'part' => $sample->part_type]) }}">{{ $sample->validation_status === 'menunggu_validasi' ? 'Mulai validasi' : 'Validasi ulang' }}</button></td>
                         </tr>
                     @empty
                         <tr><td colspan="8" class="empty">Belum ada dokumen untuk divalidasi.</td></tr>

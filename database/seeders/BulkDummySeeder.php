@@ -13,36 +13,48 @@ class BulkDummySeeder extends Seeder
         $now = now();
         Storage::disk('local')->deleteDirectory('part-documents');
         Storage::disk('local')->deleteDirectory('raw');
+        $projects = [
+            'Marine Protective Coatings', 'Protective Coatings Indonesia', 'Yacht Finishes',
+            'Automotive Refinish', 'Industrial Maintenance Coatings', 'Powder Coatings',
+        ];
+        $dailyVolumes = [1, 3, 7, 12, 16, 20, 5, 10, 14, 12];
+        $dayIndex = 0;
+        $documentsOnDay = 0;
 
         for ($number = 1; $number <= 100; $number++) {
+            if ($documentsOnDay === $dailyVolumes[$dayIndex]) {
+                $dayIndex++;
+                $documentsOnDay = 0;
+            }
             $part = $number % 2 === 0 ? 'A' : 'B';
-            $date = $now->copy()->subDays(100 - $number);
-            $coa = sprintf('COA-%s-%03d', $part, $number);
-            $batch = sprintf('BN-%010d', 3265100000 + $number);
-            $documentName = $coa.'_'.$batch.'.pdf';
-            $documentPath = 'part-documents/part-'.strtolower($part).'/dummy-'.$number.'.pdf';
-            $rawPath = 'raw/dummy-'.$number.'.csv';
-            $pdf = "%PDF-1.4\n% Data dummy ".$coa."\n%%EOF";
+            $date = $now->copy()->subDays(count($dailyVolumes) - 1 - $dayIndex);
+            $documentsOnDay++;
+            $coa = sprintf('IPI-COA-%s-%04d', $date->format('ym'), $number);
+            $batch = sprintf('%010d', 3265118000 + $number);
+            $documentName = 'FTIR_Part'.$part.'_'.$coa.'_'.$batch.'.pdf';
+            $documentPath = 'part-documents/part-'.strtolower($part).'/'.$coa.'.pdf';
+            $rawPath = 'raw/'.$coa.'.csv';
+            $pdf = "%PDF-1.4\n% FTIR document ".$coa."\n%%EOF";
             $csv = "wavenumber,absorbance\n4000,0.12\n3000,0.42\n2000,0.20\n";
             Storage::disk('local')->put($documentPath, $pdf);
             Storage::disk('local')->put($rawPath, $csv);
 
             $instrumentId = DB::table('instruments')->insertGetId([
-                'name' => 'FTIR Dummy '.str_pad((string) $number, 3, '0', STR_PAD_LEFT),
-                'serial' => 'DUMMY-'.str_pad((string) $number, 5, '0', STR_PAD_LEFT),
+                'name' => 'Bruker ALPHA II - Unit '.str_pad((string) $number, 2, '0', STR_PAD_LEFT),
+                'serial' => 'ALPHAII-IPI-'.str_pad((string) $number, 4, '0', STR_PAD_LEFT),
                 'calibrated_at' => $date->copy()->subMonths(3)->toDateString(),
                 'calibration_due' => $date->copy()->addMonths(9)->toDateString(),
                 'created_at' => $date,
                 'updated_at' => $date,
             ]);
             $sampleId = DB::table('samples')->insertGetId([
-                'code' => 'DOC-DUMMY-'.str_pad((string) $number, 3, '0', STR_PAD_LEFT),
+                'code' => 'FTIR-'.str_pad((string) $number, 5, '0', STR_PAD_LEFT),
                 'name' => $coa.' Part '.$part,
                 'type' => 'Dokumen FTIR',
                 'batch' => $batch,
                 'coa' => $coa,
                 'part_type' => $part,
-                'project' => 'Project Dummy '.(($number % 10) + 1),
+                'project' => $projects[($number - 1) % count($projects)],
                 'coa_part' => $coa,
                 'batch_part' => $batch,
                 'document_part_path' => $documentPath,
@@ -53,7 +65,7 @@ class BulkDummySeeder extends Seeder
                 'ftir_status' => 'sudah_dibuat',
                 'result_status' => 'sudah_ada',
                 'user_id' => 2,
-                'notes' => 'Data dummy untuk pengujian tampilan.',
+                'notes' => 'Dokumen FTIR diterima dari laboratorium QC untuk proses validasi.',
                 'created_at' => $date,
                 'updated_at' => $date,
             ]);
@@ -61,15 +73,15 @@ class BulkDummySeeder extends Seeder
                 'sample_id' => $sampleId,
                 'instrument_id' => $instrumentId,
                 'user_id' => 2,
-                'name' => 'Pengukuran dummy '.$number,
+                'name' => 'Pengukuran FTIR '.$coa,
                 'mode' => 'absorbance',
                 'measured_at' => $date,
                 'scans' => 32,
                 'resolution' => 4,
                 'raw_path' => $rawPath,
-                'original_name' => 'dummy-'.$number.'.csv',
+                'original_name' => $coa.'.csv',
                 'sha256' => hash('sha256', $csv),
-                'notes' => 'Data dummy historis.',
+                'notes' => 'Pengukuran spektrum untuk verifikasi bahan baku.',
                 'created_at' => $date,
                 'updated_at' => $date,
             ]);
@@ -79,7 +91,7 @@ class BulkDummySeeder extends Seeder
             ]);
             DB::table('spectral_library')->insert([
                 'measurement_id' => $measurementId,
-                'category' => 'Dummy',
+                'category' => 'Referensi bahan baku',
                 'created_at' => $date,
                 'updated_at' => $date,
             ]);
@@ -88,7 +100,7 @@ class BulkDummySeeder extends Seeder
                 'user_id' => 2,
                 'type' => 'kalibrasi',
                 'performed_at' => $date->toDateString(),
-                'notes' => 'Riwayat dummy.',
+                'notes' => 'Kalibrasi berkala instrumen FTIR.',
                 'created_at' => $date,
                 'updated_at' => $date,
             ]);
@@ -96,7 +108,7 @@ class BulkDummySeeder extends Seeder
                 'measurement_id' => $measurementId,
                 'user_id' => 2,
                 'x' => 3000,
-                'label' => 'Puncak dummy '.$number,
+                'label' => 'Puncak karakteristik '.$coa,
                 'created_at' => $date,
                 'updated_at' => $date,
             ]);
@@ -105,7 +117,7 @@ class BulkDummySeeder extends Seeder
                 'reference_id' => $measurementId,
                 'user_id' => 2,
                 'correlation' => 1,
-                'notes' => 'Perbandingan dummy.',
+                'notes' => 'Perbandingan dengan spektrum referensi bahan baku.',
                 'created_at' => $date,
                 'updated_at' => $date,
             ]);
@@ -119,21 +131,21 @@ class BulkDummySeeder extends Seeder
                 'report_id' => $reportId,
                 'version' => 1,
                 'status' => 'draft',
-                'conclusion' => 'Laporan dummy.',
+                'conclusion' => 'Dokumen pengukuran FTIR siap ditinjau analis.',
                 'snapshot' => json_encode(['sample_id' => $sampleId]),
                 'reviewer_id' => 1,
-                'review_note' => 'Catatan dummy.',
+                'review_note' => 'Menunggu proses peninjauan QC.',
                 'reviewed_at' => $date,
                 'created_at' => $date,
                 'updated_at' => $date,
             ]);
             DB::table('audit_logs')->insert([
                 'user_id' => 2,
-                'action' => 'seed_dummy',
+                'action' => 'document_received',
                 'entity' => 'samples',
                 'entity_id' => $sampleId,
                 'before' => null,
-                'after' => json_encode(['source' => 'BulkDummySeeder']),
+                'after' => json_encode(['source' => 'laboratory_qc']),
                 'ip' => '127.0.0.1',
                 'created_at' => $date,
             ]);
@@ -153,10 +165,10 @@ class BulkDummySeeder extends Seeder
             'audit_logs',
         ] as $table) {
             if (DB::table($table)->count() !== 100) {
-                throw new \RuntimeException("Seeder dummy gagal: tabel {$table} harus berisi 100 data.");
+                throw new \RuntimeException("Seeder data operasional gagal: tabel {$table} harus berisi 100 data.");
             }
         }
 
-        $this->command?->info('Setiap tabel bisnis berisi 100 data dummy.');
+        $this->command?->info('Data operasional laboratorium berhasil disiapkan.');
     }
 }

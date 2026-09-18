@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         if (! app()->environment('local', 'testing')) {
-            throw new \RuntimeException('Data demo hanya boleh dipasang pada local/testing.');
+            throw new \RuntimeException('Data awal hanya boleh dipasang pada local/testing.');
         }
         $this->call(DemoSeeder::class);
         $this->call(BulkDummySeeder::class);

@@ -31,7 +31,7 @@
                     </select>
                 </label>
                 <button class="btn">Cari</button>
-                <a href="{{ route('samples.index') }}">Reset</a>
+                <a class="filter-reset" href="{{ route('samples.index') }}">Reset filter</a>
             </form>
             @include('partials.sample-table')
             <div class="mt-5">{{ $samples->links() }}</div>

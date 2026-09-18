@@ -49,8 +49,10 @@ class LabController extends Controller
         $to = $request->input('to', now()->toDateString());
         $base = DB::table('samples')->whereBetween('received_at', [$from, $to]);
         $series = (clone $base)
+            ->whereNotNull('received_at')
             ->selectRaw("DATE(received_at) as date, COUNT(*) as documents, SUM(CASE WHEN validation_status = 'menunggu_validasi' THEN 1 ELSE 0 END) as pending, SUM(CASE WHEN validation_status = 'valid' THEN 1 ELSE 0 END) as valid, SUM(CASE WHEN validation_status = 'tidak_sesuai' THEN 1 ELSE 0 END) as invalid, SUM(CASE WHEN validation_status = 'uji_ulang' THEN 1 ELSE 0 END) as retest")
             ->groupByRaw('DATE(received_at)')
+            ->havingRaw('COUNT(*) > 0')
             ->orderBy('date')
             ->get();
 
@@ -165,13 +167,26 @@ class LabController extends Controller
             'sample' => $sample,
             'material' => $sample->raw_material_id ? $this->row('raw_materials', $sample->raw_material_id) : null,
             'materials' => DB::table('raw_materials')->where('active', true)->orderBy('code')->get(),
+            'validationHistory' => DB::table('ftir_validations')
+                ->join('users', 'users.id', '=', 'ftir_validations.user_id')
+                ->where('ftir_validations.sample_id', $id)
+                ->select('ftir_validations.*', 'users.name as analyst')
+                ->orderByDesc('ftir_validations.validated_at')
+                ->get(),
+            'activityHistory' => DB::table('audit_logs')
+                ->leftJoin('users', 'users.id', '=', 'audit_logs.user_id')
+                ->where('audit_logs.entity', 'samples')
+                ->where('audit_logs.entity_id', $id)
+                ->select('audit_logs.*', 'users.name as user_name')
+                ->orderByDesc('audit_logs.created_at')
+                ->get(),
         ]);
     }
 
     public function downloadDocument(int $id)
     {
         $sample = $this->row('samples', $id);
-        abort_unless($sample->document_part_path, 404);
+        abort_unless($sample->document_part_path && Storage::disk('local')->exists($sample->document_part_path), 404);
         Audit::record('download_document', 'samples', $id);
 
         return Storage::disk('local')->download($sample->document_part_path, $sample->document_part_name, ['Content-Type' => 'application/pdf']);
@@ -226,7 +241,7 @@ class LabController extends Controller
     public function downloadReference(int $id)
     {
         $material = $this->row('raw_materials', $id);
-        abort_unless($material->reference_graph_path, 404);
+        abort_unless($material->reference_graph_path && Storage::disk('local')->exists($material->reference_graph_path), 404);
         Audit::record('download_reference', 'raw_materials', $id);
 
         return Storage::disk('local')->download($material->reference_graph_path, $material->reference_graph_name, ['Content-Type' => 'application/pdf']);
@@ -240,6 +255,45 @@ class LabController extends Controller
                 ->select('samples.*', 'raw_materials.code as material_code', 'raw_materials.name as material_name', 'raw_materials.reference_graph_path', 'raw_materials.reference_graph_name')
                 ->orderByDesc('samples.id')->paginate(15),
             'materials' => DB::table('raw_materials')->where('active', true)->orderBy('code')->get(),
+        ]);
+    }
+
+    public function tracking(Request $request)
+    {
+        $query = DB::table('samples')
+            ->leftJoin('raw_materials', 'raw_materials.id', '=', 'samples.raw_material_id')
+            ->leftJoinSub(
+                DB::table('ftir_validations')
+                    ->select('sample_id', DB::raw('MAX(validated_at) as last_validated_at'))
+                    ->groupBy('sample_id'),
+                'latest_validation',
+                fn ($join) => $join->on('latest_validation.sample_id', '=', 'samples.id')
+            )
+            ->select(
+                'samples.*',
+                'raw_materials.code as material_code',
+                'raw_materials.name as material_name',
+                'raw_materials.reference_graph_path',
+                'latest_validation.last_validated_at'
+            );
+
+        if ($request->filled('q')) {
+            $query->where(fn ($builder) => $builder
+                ->where('samples.project', 'like', '%'.$request->q.'%')
+                ->orWhere('samples.coa_part', 'like', '%'.$request->q.'%')
+                ->orWhere('samples.batch_part', 'like', '%'.$request->q.'%')
+                ->orWhere('raw_materials.code', 'like', '%'.$request->q.'%')
+                ->orWhere('raw_materials.name', 'like', '%'.$request->q.'%'));
+        }
+        if ($request->filled('status')) {
+            $query->where('samples.validation_status', $request->status);
+        }
+        if ($request->filled('reference')) {
+            $query->whereNotNull('raw_materials.reference_graph_path');
+        }
+
+        return view('tracking', [
+            'samples' => $query->orderByDesc('samples.updated_at')->paginate(15)->withQueryString(),
         ]);
     }
 

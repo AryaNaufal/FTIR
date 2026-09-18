@@ -3,10 +3,10 @@
         <thead>
             <tr>
                 <th>Project</th>
-                <th>Part</th>
+                <th class="part-heading">Part</th>
                 <th>COA Part</th>
                 <th>Batch number</th>
-                <th>Status validasi</th>
+                <th class="status-heading">Status validasi</th>
                 <th>Dokumen</th>
             </tr>
         </thead>
@@ -16,10 +16,10 @@
                     <td><a class="code"
                             href="{{ route('samples.show', $sample->id) }}">{{ $sample->project ?: 'Project belum diisi' }}</a>
                     </td>
-                    <td><span class="badge">Part {{ $sample->part_type ?: '-' }}</span></td>
+                    <td class="part-cell"><span class="badge">Part {{ $sample->part_type ?: '-' }}</span></td>
                     <td>{{ $sample->coa_part ?: '-' }}</td>
                     <td>{{ $sample->batch_part ?: '-' }}</td>
-                    <td>
+                    <td class="status-cell">
                         @php($statuses = ['menunggu_validasi' => ['Menunggu', 'warning'], 'valid' => ['Valid', 'success'], 'tidak_sesuai' => ['Tidak sesuai', 'danger'], 'uji_ulang' => ['Uji ulang', 'retest']])
                         @php([$label, $class] = $statuses[$sample->validation_status] ?? $statuses['menunggu_validasi'])
                         <span class="badge {{ $class }}">{{ $label }}</span>

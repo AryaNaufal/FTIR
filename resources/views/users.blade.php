@@ -22,8 +22,8 @@
                             <th>Email</th>
                             <th>Username</th>
                             <th>Role</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
+                            <th class="status-heading">Status</th>
+                            <th class="action-heading">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -33,19 +33,19 @@
                                 <td>{{ $user->email }}</td>
                                 <td>{{ $user->username }}</td>
                                 <td>{{ ucfirst($user->role) }}</td>
-                                <td><span
+                                <td class="status-cell"><span
                                         class="badge {{ $user->active ? '' : 'warning' }}">{{ $user->active ? 'Aktif' : 'Nonaktif' }}</span>
                                 </td>
-                                <td>
+                                <td class="action-cell">
                                     <div class="flex gap-2">
-                                        <button class="text-button" type="button"
+                                        <button class="text-button table-action" type="button"
                                             @click='detail = @json($user)'><x-ui-icon
                                                 name="eye" />Detail</button>
-                                        <button class="text-button" type="button"
+                                        <button class="text-button table-action" type="button"
                                             @click='edit = @json($user)'><x-ui-icon
                                                 name="pencil-square" />Edit</button>
                                         @if ($user->id !== auth()->id())
-                                            <button class="text-button text-red-700" type="button"
+                                            <button class="text-button table-action danger" type="button"
                                                 @click='remove = @json($user)'><x-ui-icon
                                                     name="trash" />Hapus</button>
                                         @endif

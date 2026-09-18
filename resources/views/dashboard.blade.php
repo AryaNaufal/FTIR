@@ -39,7 +39,7 @@
             </label>
             <button class="btn secondary"><x-ui-icon name="adjustments-horizontal" />Tampilkan grafik</button>
         </form>
-        <div id="document-monitoring-chart" class="chart" aria-label="Grafik garis status validasi FTIR"></div>
+        <div id="document-monitoring-chart" class="chart" role="img" aria-label="Grafik garis status validasi FTIR"></div>
         <script id="document-monitoring-payload" type="application/json">@json($series)</script>
     </section>
 

@@ -14,6 +14,7 @@ Route::middleware(['auth', ActiveUser::class])->group(function () {
     Route::get('/samples/{id}/document', [Lab::class, 'downloadDocument'])->whereNumber('id')->name('samples.document.download');
     Route::get('/validations', [Lab::class, 'validations'])->name('validations.index');
     Route::post('/validations', [Lab::class, 'saveValidation'])->name('validations.store');
+    Route::get('/tracking', [Lab::class, 'tracking'])->name('tracking.index');
     Route::get('/materials/{id}/reference', [Lab::class, 'downloadReference'])->whereNumber('id')->name('materials.reference.download');
     Route::get('/materials', [Lab::class, 'materials'])->name('materials.index');
     Route::post('/materials', [Lab::class, 'saveMaterial'])->name('materials.store');

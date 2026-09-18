@@ -47,7 +47,7 @@ class LabTest extends TestCase
         $this->withoutVite();
         $this->actingAs($this->user());
 
-        foreach (['/', '/samples', '/validations'] as $url) {
+        foreach (['/', '/samples', '/validations', '/tracking'] as $url) {
             $this->get($url)->assertOk();
         }
         foreach (['/spectra/1', '/library', '/reports', '/instruments', '/audit', '/samples/1/vendor-result'] as $url) {
@@ -67,6 +67,7 @@ class LabTest extends TestCase
         $this->assertDatabaseHas('samples', ['id' => $sample->id, 'coa_part' => 'EAA485', 'part_type' => 'A']);
         Storage::disk('local')->assertExists($sample->document_part_path);
         $this->get('/samples/'.$sample->id)->assertOk()->assertSee('Dokumen Part A');
+        $this->get('/tracking?q=Marine')->assertOk()->assertSee('Tracking Grafik FTIR')->assertSee('Marine Coating');
         $this->get('/samples/'.$sample->id.'/document')->assertOk();
         $this->get('/')->assertOk()->assertSee('document-monitoring-payload');
     }

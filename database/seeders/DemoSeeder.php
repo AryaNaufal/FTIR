@@ -11,10 +11,10 @@ class DemoSeeder extends Seeder
     public function run(): void
     {
         if (! app()->environment('local', 'testing')) {
-            throw new \RuntimeException('Seeder demo hanya untuk lingkungan lokal.');
+            throw new \RuntimeException('Seeder hanya dapat dijalankan pada lingkungan lokal.');
         }
         if (DB::table('users')->exists()) {
-            $this->command?->warn('Database sudah berisi pengguna; demo tidak ditambahkan.');
+            $this->command?->warn('Database sudah berisi pengguna; data awal tidak ditambahkan.');
 
             return;
         }
@@ -22,7 +22,7 @@ class DemoSeeder extends Seeder
         foreach (['admin' => 'Admin Laboratorium', 'analis' => 'Analis QC'] as $role => $name) {
             DB::table('users')->insert(['name' => $name, 'email' => $role.'@ipi.local', 'username' => $role, 'role' => $role, 'active' => true, 'password' => $password, 'created_at' => now(), 'updated_at' => now()]);
         }
-        $this->command?->info('Akun demo: admin dan analis (atau email @ipi.local).');
-        $this->command?->info('Kata sandi demo untuk semua akun: password');
+        $this->command?->info('Akun awal: admin dan analis (atau email @ipi.local).');
+        $this->command?->info('Kata sandi awal untuk semua akun: password');
     }
 }
